@@ -1,0 +1,39 @@
+# Data files (too large for GitHub)
+*.h5ad
+*.h5
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
+.env
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Results (regenerable, but keep if small)
+# results/  # uncomment if results get too large
+
+# PDFs and check-in docs (optional, remove if you want them tracked)
+*.pdf
+checkin3.md
+*.pptx
+~$*
+results/gears_data.pkl
