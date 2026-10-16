@@ -20,13 +20,13 @@ DATA_DIR = "data"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
 
-# ── 1. Load data ─────────────────────────────────────────────────────────────
+# 1. Load data
 print("Loading data...")
 adata = sc.read_h5ad("data/NormanWeissman2019_filtered.h5ad")
 print(f"Loaded: {adata.shape[0]} cells, {adata.shape[1]} genes")
 print(f"Perturbation conditions: {adata.obs['perturbation'].nunique()}")
 
-# ── 2. Identify perturbation types ──────────────────────────────────────────
+# 2. Identify perturbation types
 # scPerturb uses 'nperts' column: 0=control, 1=single, 2=combo
 # Combo perturbations use '_' as separator (e.g. 'CBL_CNN1')
 perturbations = adata.obs['perturbation'].unique()
@@ -38,7 +38,7 @@ combos = [p for p in perturbations if nperts_map[p] == 2]
 
 print(f"Controls: {len(controls)}, Singles: {len(singles)}, Combos: {len(combos)}")
 
-# ── 3. Normalize ────────────────────────────────────────────────────────────
+# 3. Normalize
 print("Normalizing...")
 # Store raw counts
 adata.layers['counts'] = adata.X.copy()
@@ -46,14 +46,14 @@ adata.layers['counts'] = adata.X.copy()
 sc.pp.normalize_total(adata, target_sum=1e4)
 sc.pp.log1p(adata)
 
-# ── 4. Select top 5,000 HVGs ────────────────────────────────────────────────
+# 4. Select top 5,000 HVGs
 print("Selecting HVGs...")
 sc.pp.highly_variable_genes(adata, n_top_genes=5000, flavor='seurat_v3',
                             layer='counts')
 adata_hvg = adata[:, adata.var['highly_variable']].copy()
 print(f"After HVG selection: {adata_hvg.shape}")
 
-# ── 5. Compute per-perturbation mean expression ────────────────────────────
+# 5. Compute per-perturbation mean expression
 print("Computing per-perturbation mean expression profiles...")
 
 # Get control mean
@@ -74,7 +74,7 @@ for pert in singles + combos:
 
 print(f"Computed shifts for {len(mean_shift)} perturbations")
 
-# ── 6. Train/test split ────────────────────────────────────────────────────
+# 6. Train/test split
 # Hold out ~20 unseen two-gene combinations
 print("Creating train/test split...")
 
@@ -87,7 +87,7 @@ train_combos = [c for c in combo_list if c not in test_combos]
 print(f"Train combos: {len(train_combos)}, Test combos: {len(test_combos)}")
 print(f"Test combos: {test_combos}")
 
-# ── 7. Save processed data ─────────────────────────────────────────────────
+# 7. Save processed data
 print("Saving processed data...")
 
 processed = {

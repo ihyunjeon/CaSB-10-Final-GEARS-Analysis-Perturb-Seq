@@ -20,7 +20,7 @@ OUTPUT_DIR = "results"
 DATA_DIR = "data"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ── 1. Load data via GEARS ──────────────────────────────────────────────
+# 1. Load data via GEARS
 print("Loading Norman dataset via GEARS PertData...")
 print("  (First run downloads ~150 MB from Harvard Dataverse)")
 pert_data = PertData(DATA_DIR)
@@ -37,7 +37,7 @@ print(f"Split: train={len(set2conditions['train'])} | "
       f"val={len(set2conditions['val'])} | "
       f"test={len(set2conditions['test'])} conditions")
 
-# ── 2. Compute mean expression per condition ─────────────────────────────
+# 2. Compute mean expression per condition
 print("Computing per-condition mean expression...")
 condition_means = {}
 for cond in adata.obs['condition'].unique():
@@ -52,12 +52,12 @@ gene_id2idx = dict(zip(adata.var.index.values, range(len(adata.var))))
 gene_names = list(adata.var['gene_name'].values)
 de_genes_dict = adata.uns.get('rank_genes_groups_cov_all', {})
 
-# ── 3. Identify test combos ─────────────────────────────────────────────
+# 3. Identify test combos
 test_combos = [c for c in set2conditions['test']
                if c != 'ctrl' and '+' in c and 'ctrl' not in c]
 print(f"Test combos: {len(test_combos)}")
 
-# ── 4. Additive baseline ────────────────────────────────────────────────
+# 4. Additive baseline
 print("Computing additive baseline predictions...")
 
 def find_single(gene):
@@ -117,7 +117,7 @@ for combo in test_combos:
 
 results_df = pd.DataFrame(results)
 
-# ── 5. Summary ───────────────────────────────────────────────────────────
+# 5. Summary
 print(f"\n{'='*50}")
 print(f"Additive Baseline -- {len(results_df)} test combos")
 print(f"{'='*50}")
@@ -127,7 +127,7 @@ for sg in sorted(results_df['subgroup'].unique()):
     sdf = results_df[results_df['subgroup'] == sg]
     print(f"  {sg}: r={sdf['pearson_r_de20'].mean():.4f}  (n={len(sdf)})")
 
-# ── 6. Save ──────────────────────────────────────────────────────────────
+# 6. Save
 results_df.to_csv(os.path.join(OUTPUT_DIR, 'additive_baseline_results.csv'),
                   index=False)
 

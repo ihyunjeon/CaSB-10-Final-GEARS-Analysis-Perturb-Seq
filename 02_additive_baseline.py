@@ -15,7 +15,7 @@ import seaborn as sns
 OUTPUT_DIR = "results"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ── 1. Load processed data ──────────────────────────────────────────────────
+# 1. Load processed data
 print("Loading processed data...")
 with open('data/processed_data.pkl', 'rb') as f:
     data = pickle.load(f)
@@ -24,12 +24,12 @@ mean_shift = data['mean_shift']
 test_combos = data['test_combos']
 gene_names = data['gene_names']
 
-# ── 2. Identify top 20 DE genes per perturbation ───────────────────────────
+# 2. Identify top 20 DE genes per perturbation
 def get_top_de_genes(shift, n=20):
     """Return indices of top n DE genes by absolute shift magnitude."""
     return np.argsort(np.abs(shift))[-n:]
 
-# ── 3. Additive predictions ────────────────────────────────────────────────
+# 3. Additive predictions
 print("Running additive baseline on test combos...")
 results = []
 
@@ -78,14 +78,14 @@ print(f"\nResults for {len(results_df)} test combos:")
 print(results_df[['combo', 'pearson_r_top20', 'pearson_r_full', 'non_additivity']]
       .to_string(index=False))
 
-# ── 4. Summary statistics ──────────────────────────────────────────────────
+# 4. Summary statistics
 print(f"\n--- Additive Baseline Summary ---")
 print(f"Mean Pearson r (top 20 DE): {results_df['pearson_r_top20'].mean():.4f}")
 print(f"Median Pearson r (top 20 DE): {results_df['pearson_r_top20'].median():.4f}")
 print(f"Mean Pearson r (all genes): {results_df['pearson_r_full'].mean():.4f}")
 print(f"Mean non-additivity score: {results_df['non_additivity'].mean():.4f}")
 
-# ── 5. Visualize ───────────────────────────────────────────────────────────
+# 5. Visualize
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
 # Distribution of Pearson r

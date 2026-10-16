@@ -26,7 +26,7 @@ plt.rcParams.update({
     'font.family': 'sans-serif',
 })
 
-# ── Load saved data ─────────────────────────────────────────────────────
+# Load saved data
 print("Loading results...")
 baseline_df = pd.read_csv(os.path.join(OUTPUT_DIR, 'additive_baseline_results.csv'))
 history_df = pd.read_csv(os.path.join(OUTPUT_DIR, 'training_history.csv'))
@@ -51,7 +51,7 @@ test_res = gd['test_res']
 pert_emb = gd['pert_emb_gnn']
 pert_names = gd['pert_names']
 
-# ── Build comparison dataframe ───────────────────────────────────────────
+# Build comparison dataframe
 comparison = []
 for _, row in baseline_df.iterrows():
     c = row['condition']
@@ -75,9 +75,9 @@ print(f"  MSE (DE20): Additive={comp_df['additive_mse'].mean():.4f}, "
       f"GEARS={comp_df['gears_mse'].mean():.4f}\n")
 
 
-# ═════════════════════════════════════════════════════════════════════════
+
 # Figure 1: Training Curves
-# ═════════════════════════════════════════════════════════════════════════
+
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
 
 ax1.plot(history_df['epoch'], history_df['train_loss'], 'o-',
@@ -105,9 +105,9 @@ plt.close()
 print("Saved fig1_training_curves.png")
 
 
-# ═════════════════════════════════════════════════════════════════════════
+
 # Figure 2: t-SNE of Perturbation Embeddings
-# ═════════════════════════════════════════════════════════════════════════
+
 
 # Identify genes actually perturbed in the experiment
 all_conds = []
@@ -190,9 +190,9 @@ plt.close()
 print("Saved fig2_tsne_embeddings.png")
 
 
-# ═════════════════════════════════════════════════════════════════════════
+
 # Figure 3: Subgroup Comparison Bar Chart (Pearson r + MSE)
-# ═════════════════════════════════════════════════════════════════════════
+
 subgroups = sorted([s for s in comp_df['subgroup'].unique() if s != 'unknown'])
 if 'unknown' in comp_df['subgroup'].values:
     subgroups.append('unknown')
@@ -265,9 +265,9 @@ plt.close()
 print("Saved fig3_subgroup_comparison.png")
 
 
-# ═════════════════════════════════════════════════════════════════════════
+
 # Figure 4: Per-Perturbation Scatter
-# ═════════════════════════════════════════════════════════════════════════
+
 sg_colors = {
     'combo_seen0': '#C62828', 'combo_seen1': '#EF6C00',
     'combo_seen2': '#2E7D32', 'unknown': '#757575',
@@ -302,9 +302,9 @@ plt.close()
 print("Saved fig4_per_pert_scatter.png")
 
 
-# ═════════════════════════════════════════════════════════════════════════
+
 # Figure 5: Example Perturbation Plot
-# ═════════════════════════════════════════════════════════════════════════
+
 
 # Pick the combo with the largest GEARS improvement
 best_idx = comp_df['improvement'].idxmax()
@@ -384,9 +384,9 @@ plt.close()
 print("Saved fig5_example_perturbation.png")
 
 
-# ═════════════════════════════════════════════════════════════════════════
+
 # Figure 6: Non-Additivity Stratified Analysis
-# ═════════════════════════════════════════════════════════════════════════
+
 # Split combos into terciles by non-additivity score.
 # High non-additivity = strong synergistic/antagonistic interaction
 # = where additive model SHOULD fail and GEARS should shine.
@@ -464,9 +464,9 @@ else:
     print(f"WARN: Only {len(na_valid)} combos with non-additivity scores, skipping fig6")
 
 
-# ═════════════════════════════════════════════════════════════════════════
+
 # Figure 7: Unseen Gene Evaluation — GEARS's unique advantage
-# ═════════════════════════════════════════════════════════════════════════
+
 # For genes never individually perturbed during training, the additive
 # baseline CANNOT make predictions (no measured single-gene effect).
 # GEARS can still predict via the GO knowledge graph.
@@ -597,9 +597,9 @@ else:
     print("No unseen_single perturbations found in test split")
 
 
-# ═════════════════════════════════════════════════════════════════════════
+
 # Save comparison table & print summary
-# ═════════════════════════════════════════════════════════════════════════
+
 comp_df.to_csv(os.path.join(OUTPUT_DIR, 'model_comparison.csv'), index=False)
 
 print(f"\n{'='*50}")

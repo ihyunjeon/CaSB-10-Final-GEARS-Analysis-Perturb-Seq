@@ -19,7 +19,7 @@ from gears import PertData, GEARS
 OUTPUT_DIR = "results"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ── 1. Load trained GEARS model ───────────────────────────────────────────
+# 1. Load trained GEARS model
 print("Loading trained GEARS model...")
 if torch.cuda.is_available():
     device = 'cuda:0'
@@ -36,7 +36,7 @@ pert_data.get_dataloader(batch_size=32, test_batch_size=128)
 gears_model = GEARS(pert_data, device=device)
 gears_model.load_pretrained(os.path.join(OUTPUT_DIR, 'gears_model'))
 
-# ── 2. Extract perturbation embeddings ─────────────────────────────────────
+# 2. Extract perturbation embeddings
 print("Extracting perturbation embeddings...")
 
 # Access the learned gene embeddings from the model
@@ -50,7 +50,7 @@ emb_matrix = model.gene_emb.weight.detach().cpu().numpy()
 
 print(f"Embedding matrix shape: {emb_matrix.shape}")
 
-# ── 3. t-SNE visualization ────────────────────────────────────────────────
+# 3. t-SNE visualization
 print("Running t-SNE...")
 tsne = TSNE(n_components=2, random_state=42, perplexity=30, n_iter=1000)
 embeddings_2d = tsne.fit_transform(emb_matrix)
@@ -76,7 +76,7 @@ plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, 'tsne_embeddings.png'), dpi=150)
 print(f"t-SNE plot saved to {OUTPUT_DIR}/tsne_embeddings.png")
 
-# ── 4. Relative Neighborhood Score (RNS) ──────────────────────────────────
+# 4. Relative Neighborhood Score (RNS)
 print("\nComputing Relative Neighborhood Score (RNS)...")
 
 def compute_rns(embeddings, labels, n_neighbors=10):
@@ -140,7 +140,7 @@ for i, gene in enumerate(gene_names):
 rns, observed, expected = compute_rns(emb_matrix, labels, n_neighbors=10)
 print(f"RNS: {rns:.4f} (observed: {observed:.4f}, expected: {expected:.4f})")
 
-# ── 5. Save embedding data ────────────────────────────────────────────────
+# 5. Save embedding data
 embedding_data = {
     'gene_names': list(gene_names),
     'embeddings': emb_matrix,

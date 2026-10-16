@@ -31,7 +31,7 @@ WEIGHT_DECAY = 1e-5
 SCHEDULER_GAMMA = 0.95
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ── 1. Device ────────────────────────────────────────────────────────────
+# 1. Device
 if torch.cuda.is_available():
     device = 'cuda:0'
 elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
@@ -43,20 +43,20 @@ if device.startswith('cuda'):
     print(f"  GPU: {torch.cuda.get_device_name(0)}")
     print(f"  Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
 
-# ── 2. Load data (uses cached splits from script 01) ────────────────────
+# 2. Load data (uses cached splits from script 01)
 print("Loading data via GEARS PertData...")
 pert_data = PertData(DATA_DIR)
 pert_data.load(data_name='norman')
 pert_data.prepare_split(split='simulation', seed=1)
 pert_data.get_dataloader(batch_size=32, test_batch_size=128)
 
-# ── 3. Initialize GEARS model ───────────────────────────────────────────
+# 3. Initialize GEARS model
 print("Initializing GEARS model...")
 gears_model = GEARS(pert_data, device=device)
 gears_model.model_initialize(hidden_size=64)
 print(f"  Genes: {gears_model.num_genes}  Perturbations: {gears_model.num_perts}")
 
-# ── 4. Training loop with history ───────────────────────────────────────
+# 4. Training loop with history
 print(f"\nTraining GEARS ({EPOCHS} epochs, gamma={SCHEDULER_GAMMA})...")
 train_loader = gears_model.dataloader['train_loader']
 val_loader = gears_model.dataloader['val_loader']
@@ -120,7 +120,7 @@ model_path = os.path.join(OUTPUT_DIR, 'gears_model')
 gears_model.save_model(model_path)
 print(f"Model saved to {model_path}/")
 
-# ── 5. Test evaluation ──────────────────────────────────────────────────
+# 5. Test evaluation
 print("\nEvaluating on test set...")
 test_loader = gears_model.dataloader['test_loader']
 test_res = evaluate(test_loader, best_model, False, device)
@@ -137,7 +137,7 @@ for pert in np.unique(test_res['pert_cat']):
     idx = np.where(test_res['pert_cat'] == pert)[0]
     gears_pred_means[pert] = test_res['pred'][idx].mean(axis=0)
 
-# ── 6. Extract embeddings ───────────────────────────────────────────────
+# 6. Extract embeddings
 print("Extracting perturbation embeddings...")
 best_model.eval()
 
@@ -156,7 +156,7 @@ with torch.no_grad():
 
 print(f"  Perturbation embeddings: {pert_emb_gnn.shape}")
 
-# ── 7. Save everything ──────────────────────────────────────────────────
+# 7. Save everything
 history_df = pd.DataFrame(history)
 history_df.to_csv(os.path.join(OUTPUT_DIR, 'training_history.csv'), index=False)
 
